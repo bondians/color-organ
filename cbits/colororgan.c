@@ -35,7 +35,7 @@ void color_organ_cleanup(color_organ_t *c) {
     free(c);
 }
 
-void color_organ_tick(color_organ_t *c, spectrum_t *s) {
+int color_organ_tick(color_organ_t *c, spectrum_t *s) {
     ALint samples_available;
     do {
         alcGetIntegerv(c->mic, ALC_CAPTURE_SAMPLES, (ALCsizei)sizeof(ALint), &samples_available);
@@ -46,4 +46,6 @@ void color_organ_tick(color_organ_t *c, spectrum_t *s) {
         
         spectrum_feed(s, samples_available, c->capture_buf);
     }
+    
+    return samples_available;
 }

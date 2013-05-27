@@ -17,7 +17,7 @@ foreign import ccall "&color_organ_cleanup"
     color_organ_cleanup :: FunPtr (Ptr ColorOrgan -> IO ())
 
 foreign import ccall "color_organ_tick"
-    color_organ_tick :: Ptr ColorOrgan -> Ptr Spectrum -> IO ()
+    color_organ_tick :: Ptr ColorOrgan -> Ptr Spectrum -> IO CInt
 
 newColorOrgan :: Double -> Int -> IO ColorOrgan
 newColorOrgan sampleRate captureBufSize = do
@@ -25,7 +25,8 @@ newColorOrgan sampleRate captureBufSize = do
     when (c == nullPtr) $ fail "newColorOrgan: failed to open audio device"
     ColorOrgan <$> newForeignPtr color_organ_cleanup c
 
-tickColorOrgan :: ColorOrgan -> Spectrum -> IO ()
+tickColorOrgan :: ColorOrgan -> Spectrum -> IO Int
 tickColorOrgan (ColorOrgan fp) s = withForeignPtr fp $ \c ->
-    withSpectrum s (color_organ_tick c)
+    fromIntegral <$>
+        withSpectrum s (color_organ_tick c)
 

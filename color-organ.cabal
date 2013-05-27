@@ -25,7 +25,11 @@ Library
   ghc-options:          -Wall
   hs-source-dirs:       src
   exposed-modules:      ColorOrgan,
+                        Channel,
                         Spectrum
   other-modules:        Spectrum.Internal
   build-depends:        base >= 3,
+                        fingertree,
+                        monoid-statistics == 0.0.0.2,
+                        statistics,
                         vector
