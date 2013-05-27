@@ -1,4 +1,4 @@
-#include "Spectrum.h"
+#include "spectrum.h"
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,7 +37,7 @@ spectrum_t *spectrum_init(size_t fft_size, double sample_rate) {
     return s;
 }
 
-void spectrum_destroy(spectrum_t *s) {
+void spectrum_cleanup(spectrum_t *s) {
     fftw_destroy_plan(s->plan);
     fftw_free(s->fft_in);
     fftw_free(s->fft_out);

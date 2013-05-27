@@ -9,7 +9,7 @@
 typedef struct spectrum_t spectrum_t;
 
 spectrum_t *spectrum_init(size_t fft_size, double sample_rate);
-void spectrum_destroy(spectrum_t *s);
+void spectrum_cleanup(spectrum_t *s);
 
 int spectrum_bin(spectrum_t *s, double freq);
 double spectrum_freq(spectrum_t *s, int bin);
