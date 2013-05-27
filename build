@@ -1,0 +1,4 @@
+#!/bin/sh
+
+gcc -std=c99 -framework OpenAL -I/opt/homebrew/include -L/opt/homebrew/lib -lfftw3 test.c
+
