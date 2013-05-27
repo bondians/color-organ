@@ -1,4 +1,4 @@
 #!/bin/sh
 
-gcc -std=c99 -framework OpenAL -I/opt/homebrew/include -L/opt/homebrew/lib -lfftw3 test.c
-
+# gcc -std=c99 -framework OpenAL -I/opt/homebrew/include -L/opt/homebrew/lib -lfftw3 test.c
+g++ -framework OpenAL -L/opt/homebrew/lib -lfftw3 -Iinclude -I/opt/homebrew/include src/main.cpp src/Spectum.cpp 
