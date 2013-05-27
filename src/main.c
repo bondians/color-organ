@@ -1,18 +1,19 @@
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
-#include <iostream>
+#include <math.h>
+#include <stdio.h>
 #include "Spectrum.h"
 
-const int SAMPLE_RATE = 44100;
-const int CAPTUREBUF_SIZE = SAMPLE_RATE/25;
+#define SAMPLE_RATE     44100
+#define CAPTUREBUF_SIZE (SAMPLE_RATE/25)
 
 int main() {
-    bondi::Spectrum s;
+    spectrum_t *s = spectrum_init(16384, 44100.0);
     ALCdevice *mic;
     int16_t buf[CAPTUREBUF_SIZE];
     
-    int bin = s.bin(440);
-    double freq = s.freq(bin);
+    int bin = spectrum_bin(s, 440);
+    double freq = spectrum_freq(s, bin);
     
     mic = alcCaptureOpenDevice(NULL, SAMPLE_RATE, AL_FORMAT_MONO16, CAPTUREBUF_SIZE);
     if (alGetError() != AL_NO_ERROR) {
@@ -27,11 +28,13 @@ int main() {
         if (samples_available) {
             alcCaptureSamples(mic, (ALCvoid *)buf, samples_available);
             
-            s.feed(samples_available, buf);
-            std::cout << freq << ": " << abs(s[bin]) << std::endl;
+            spectrum_feed(s, samples_available, buf);
+            printf("%g: %g\n", freq, log(cabs(spectrum_get(s)[bin])));
         }
     }
     alcCaptureStop(mic);
     alcCaptureCloseDevice(mic);
+    
+    spectrum_destroy(s);
     return 0;
 }
