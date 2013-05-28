@@ -26,10 +26,12 @@ Library
   hs-source-dirs:       src
   exposed-modules:      ColorOrgan,
                         Channel,
+                        Crossover,
                         Spectrum
   other-modules:        Spectrum.Internal
   build-depends:        base >= 3,
                         fingertree,
                         monoid-statistics == 0.0.0.2,
+                        splines == 0.5.*,
                         statistics,
                         vector

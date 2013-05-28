@@ -8,6 +8,8 @@ module Spectrum
     , feed
     , getSpectrum
     , getMagnitude
+    
+    , getBinFrequencies
     ) where
 
 import Control.Applicative
@@ -53,3 +55,7 @@ getMagnitude :: Spectrum -> Double -> IO Double
 getMagnitude s freq = withSpectrum s $ \s' ->
     realToFrac <$>
         spectrum_get_mag s' (realToFrac freq)
+
+getBinFrequencies :: Spectrum -> IO (U.Vector Double)
+getBinFrequencies s@(Spectrum n _) =
+    U.generateM (n `div` 2 + 1) (binToFrequency s)
