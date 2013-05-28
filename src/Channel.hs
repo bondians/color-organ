@@ -28,10 +28,10 @@ mprod n x
     | otherwise = x `mappend` mprod (n-1) x
 
 data Channel = Channel
-    { smoothing         :: Double
-    , maxHistory        :: Int
-    , history           :: IORef History
-    , current           :: IORef Double
+    { smoothing         :: !Double
+    , maxHistory        :: !Int
+    , history           :: !(IORef History)
+    , current           :: !(IORef Double)
     }
 
 newChannel :: Double -> Int -> IO Channel

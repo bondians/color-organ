@@ -9,20 +9,20 @@ import VTree
 import Channel
 import Crossover
 
-fftSize = 16384
+fftSize = 2^12
 sampleRate = 44100
 captureBufSize = 4096
 
-smooth = log 1.2
-tuningPeriod = 30
+smooth = log 1.8
+tuningPeriod = 5
 
 cutoff = 0.15
 clip x = max 0 (min 1 ((x - cutoff) / (1 - cutoff)))
 ramp k x = round (255 * (clip x ** k))
 
-xOver = crossover 0 [(440, 20), (3200, 50), (11000, 500)] (sampleRate/2)
+xOver = crossover 0 [(440, 20), (4500, 50), (15000, 500)] (sampleRate/2)
 dot v1 v2 = U.sum (U.zipWith (*) v1 v2)
-sample fs wts = dot (U.map magnitude fs) wts
+sample n fs wts = ChanSample n (dot (U.map magnitude fs) wts)
 
 main = do
     s <- newSpectrum fftSize sampleRate
@@ -41,7 +41,7 @@ main = do
         n <- tickColorOrgan c s
         fs <- getSpectrum s
         
-        set Blue   v . ramp 3.0 =<< feedChannel bChan (ChanSample n (sample fs bWt))
-        set Green  v . ramp 2.5 =<< feedChannel gChan (ChanSample n (sample fs gWt))
-        set Yellow v . ramp 1.5 =<< feedChannel yChan (ChanSample n (sample fs yWt))
-        set Red    v . ramp 1.8 =<< feedChannel rChan (ChanSample n (sample fs rWt))
+        set Blue   v . ramp 3.0 =<< feedChannel bChan (sample n fs bWt)
+        set Green  v . ramp 2.5 =<< feedChannel gChan (sample n fs gWt)
+        set Yellow v . ramp 1.5 =<< feedChannel yChan (sample n fs yWt)
+        set Red    v . ramp 1.8 =<< feedChannel rChan (sample n fs rWt)
