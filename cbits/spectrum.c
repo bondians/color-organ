@@ -56,7 +56,7 @@ size_t spectrum_feed(spectrum_t *s, size_t n, int16_t *samples) {
     if (n <= 0) return 0;
     
     if (n < s->fft_in_size) {
-        memcpy(s->fft_in + n, s->fft_in, n * sizeof(double));
+        memmove(s->fft_in + n, s->fft_in, n * sizeof(double));
     } else {
         n = s->fft_in_size;
     }

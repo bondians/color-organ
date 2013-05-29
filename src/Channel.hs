@@ -24,32 +24,41 @@ mprod 1 x = x
 mprod n x
     | even n    = 
         let x' = mprod (n `div` 2) x
-         in mappend x x
+         in mappend x' x'
     | otherwise = x `mappend` mprod (n-1) x
 
 data Channel = Channel
-    { smoothing         :: !Double
+    { attack            :: !Double
+    , decay             :: !Double
     , maxHistory        :: !Int
     , history           :: !(IORef History)
     , current           :: !(IORef Double)
     }
 
-newChannel :: Double -> Int -> IO Channel
-newChannel smooth hist = 
-    Channel smooth hist <$> newIORef FT.empty <*> newIORef 0
+newChannel :: Double -> Double -> Int -> IO Channel
+newChannel atk dcy hist = 
+    Channel atk dcy hist <$> newIORef FT.empty <*> newIORef 0
 
 updateHistory :: Int -> ChanSample -> History -> History
-updateHistory n x xs = FT.dropUntil ((<= n) . p1count) (xs |> x)
+updateHistory n x xs = FT.takeUntil ((>= n) . p1count) (x <| xs)
 
-updateCurrent smooth x y = x * lambda + y * (1 - lambda)
-    where lambda = exp (-smooth)
+updateCurrent atk dcy (ChanSample n x) y
+    | isNaN y   = x
+    | otherwise = x * alpha + y * beta
+    where 
+        alpha = exp (negate (fromIntegral n * lambda))
+        beta  = 1 - alpha
+        lambda = if x > y then atk else dcy
 
 feedChannel :: Channel -> ChanSample -> IO Double
-feedChannel chan sample@(ChanSample _ x) = do
+feedChannel chan sample = do
     modifyIORef' (history chan) (updateHistory (maxHistory chan) sample)
-    modifyIORef' (current chan) (updateCurrent (smoothing  chan) x)
+    modifyIORef' (current chan) (updateCurrent (attack chan) (decay chan) sample)
     readChannel chan
 
+-- TODO: separate auto-eq from auto-volume
+-- TODO: filter the post-normalization value
+-- even better if filtering is done by an independent system
 readChannel chan = do
     x    <- readIORef (current chan)
     hist <- readIORef (history chan)
