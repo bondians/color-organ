@@ -15,14 +15,14 @@ synopsis:               I'm too lame to describe my project
 description:            I'm too lame to describe my project
 
 Library
-  cc-options:           -std=c99
+  cc-options:           -std=c99 -O3 -ffast-math
   include-dirs:         include
   c-sources:            cbits/spectrum.c
                         cbits/colororgan.c
   pkgconfig-depends:    fftw3
   frameworks:           OpenAL
   
-  ghc-options:          -Wall
+  ghc-options:          -Wall -funbox-strict-fields
   hs-source-dirs:       src
   exposed-modules:      ColorOrgan,
                         Channel,

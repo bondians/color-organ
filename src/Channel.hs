@@ -64,4 +64,4 @@ readChannel chan = do
     hist <- readIORef (history chan)
     let stats = measure hist
         dist = normalDistr (mean stats) (max 1 (fromMaybe 1 (stddev stats)))
-    return (cumulative dist x)
+    return $! cumulative dist x

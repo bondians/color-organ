@@ -18,12 +18,19 @@ import Data.Int
 import qualified Data.Vector.Storable as ST
 import qualified Data.Vector.Unboxed as U
 import Foreign.ForeignPtr
+import Foreign.Ptr
 import Foreign.Storable
 import Spectrum.Internal
 
-newSpectrum :: Int -> Double -> IO Spectrum
-newSpectrum sz sampleRate = do
-    s <- spectrum_init (fromIntegral sz) (realToFrac sampleRate)
+newSpectrum :: Double -> Int -> Maybe (ST.Vector Double) -> IO Spectrum
+newSpectrum sampleRate sz mbWindow = do
+    let withWindow Nothing  f = f nullPtr
+        withWindow (Just w) f
+            | ST.length w == sz     = ST.unsafeWith w (f . castPtr)
+            | otherwise             = fail "window is not the right size"
+    
+    s <- withWindow mbWindow $
+        spectrum_init (realToFrac sampleRate) (fromIntegral sz)
     Spectrum sz <$> newForeignPtr spectrum_cleanup s
 
 frequencyToBin :: Spectrum -> Double -> IO Int

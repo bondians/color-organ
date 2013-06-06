@@ -13,7 +13,7 @@ withSpectrum (Spectrum _ fp) = withForeignPtr fp
 
 
 foreign import ccall unsafe "spectrum_init"
-    spectrum_init :: CSize -> CDouble -> IO (Ptr Spectrum)
+    spectrum_init :: CDouble -> CSize -> Ptr CDouble -> IO (Ptr Spectrum)
 foreign import ccall unsafe "&spectrum_cleanup"
     spectrum_cleanup :: FunPtr (Ptr Spectrum -> IO ())
 
